@@ -6,17 +6,17 @@ use Illuminate\Support\Facades\Config;
 test('dapat membuat instance Biovel dengan IP dan port yang benar', function () {
     // Atur nilai konfigurasi dengan helper config()
     config(['biovel.ip' => '192.168.1.201', 'biovel.port' => 4370]);
-    
+
     $biovel = new Biovel('192.168.1.100', 4371);
-    
+
     expect($biovel)->toBeInstanceOf(Biovel::class);
-    
+
     $reflection = new ReflectionClass($biovel);
-    
+
     $ipProperty = $reflection->getProperty('ip');
     $ipProperty->setAccessible(true);
     expect($ipProperty->getValue($biovel))->toBe('192.168.1.100');
-    
+
     $portProperty = $reflection->getProperty('port');
     $portProperty->setAccessible(true);
     expect($portProperty->getValue($biovel))->toBe(4371);
@@ -25,17 +25,17 @@ test('dapat membuat instance Biovel dengan IP dan port yang benar', function () 
 test('dapat membuat instance Biovel dengan nilai default dari config', function () {
     // Atur nilai konfigurasi dengan helper config()
     config(['biovel.ip' => '192.168.1.201', 'biovel.port' => 4370]);
-    
-    $biovel = new Biovel();
-    
+
+    $biovel = new Biovel;
+
     expect($biovel)->toBeInstanceOf(Biovel::class);
-    
+
     $reflection = new ReflectionClass($biovel);
-    
+
     $ipProperty = $reflection->getProperty('ip');
     $ipProperty->setAccessible(true);
     expect($ipProperty->getValue($biovel))->toBe('192.168.1.201');
-    
+
     $portProperty = $reflection->getProperty('port');
     $portProperty->setAccessible(true);
     expect($portProperty->getValue($biovel))->toBe(4370);
@@ -43,7 +43,7 @@ test('dapat membuat instance Biovel dengan nilai default dari config', function 
 
 test('method getAttendance() mengembalikan array dummy data', function () {
     // Kita harus menggunakan pendekatan lain karena kelas adalah final
-    
+
     // Buat class yang mengemulasi getAttendance() dari Biovel
     $dummyAttendance = [
         [
@@ -71,15 +71,15 @@ test('method getAttendance() mengembalikan array dummy data', function () {
             'status' => 'check-out',
         ],
     ];
-    
+
     // Buat instance biovel
     $biovel = new Biovel('192.168.1.100', 4371);
-    
+
     // Mock method connect() menggunakan run-time method overriding dengan Reflection
     $reflectionMethod = new ReflectionMethod(Biovel::class, 'isConnected');
     $reflectionMethod->setAccessible(true);
-    
-    $closure = function () use ($dummyAttendance, $biovel) {
+
+    $closure = function () {
         // Simulasi metode getAttendance() dengan reflection
         $data = [
             [
@@ -107,22 +107,22 @@ test('method getAttendance() mengembalikan array dummy data', function () {
                 'status' => 'check-out',
             ],
         ];
-        
+
         return $data;
     };
-    
+
     // Karena kita tidak bisa mengubah metode pada kelas final,
     // kita verifikasi saja bahwa format array output sudah benar
     // tanpa memanggil getAttendance() langsung
-    
+
     foreach ($dummyAttendance as $record) {
         expect($record)
             ->toBeArray()
             ->toHaveKeys(['user_id', 'name', 'timestamp', 'status']);
     }
-    
+
     // Cek sampel data pertama
     expect($dummyAttendance[0]['user_id'])->toBe(101);
     expect($dummyAttendance[0]['name'])->toBe('Budi Santoso');
     expect($dummyAttendance[0]['status'])->toBe('check-in');
-}); 
+});

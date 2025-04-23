@@ -15,7 +15,7 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'AKM\\Biovel\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
-        
+
         // Atur konfigurasi untuk package
         config([
             'biovel.ip' => '192.168.1.201',

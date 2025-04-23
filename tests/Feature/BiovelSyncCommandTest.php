@@ -9,7 +9,7 @@ class FakeBiovel
     {
         return true;
     }
-    
+
     public function getAttendance(): array
     {
         return [
@@ -35,7 +35,7 @@ class FailingBiovel
     {
         throw new \Exception('Koneksi gagal');
     }
-    
+
     public function getAttendance(): array
     {
         return [];
@@ -44,21 +44,21 @@ class FailingBiovel
 
 test('command biovel:sync dapat dijalankan dengan sukses', function () {
     // Bind fake implementation ke container
-    $this->app->instance('biovel', new FakeBiovel());
-    $this->app->instance(Biovel::class, new FakeBiovel());
-    
+    $this->app->instance('biovel', new FakeBiovel);
+    $this->app->instance(Biovel::class, new FakeBiovel);
+
     // Jalankan perintah artisan
     $result = Artisan::call('biovel:sync');
-    
+
     // Periksa bahwa perintah berhasil (mengembalikan kode 0)
     expect($result)->toBe(0);
 });
 
 test('command biovel:sync menampilkan output yang benar', function () {
     // Bind fake implementation ke container
-    $this->app->instance('biovel', new FakeBiovel());
-    $this->app->instance(Biovel::class, new FakeBiovel());
-    
+    $this->app->instance('biovel', new FakeBiovel);
+    $this->app->instance(Biovel::class, new FakeBiovel);
+
     // Jalankan command dan periksa outputnya
     $this->artisan('biovel:sync')
         ->expectsOutputToContain('Mulai sinkronisasi data absensi...')
@@ -73,11 +73,11 @@ test('command biovel:sync menampilkan output yang benar', function () {
 
 test('command biovel:sync menampilkan pesan error jika koneksi gagal', function () {
     // Bind failing implementation ke container
-    $this->app->instance('biovel', new FailingBiovel());
-    $this->app->instance(Biovel::class, new FailingBiovel());
-    
+    $this->app->instance('biovel', new FailingBiovel);
+    $this->app->instance(Biovel::class, new FailingBiovel);
+
     // Jalankan perintah dan periksa output error
     $this->artisan('biovel:sync')
         ->expectsOutputToContain('Gagal sinkronisasi: Koneksi gagal')
         ->assertFailed();
-}); 
+});
