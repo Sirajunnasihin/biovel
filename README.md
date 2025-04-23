@@ -1,68 +1,106 @@
-# :package_description
+# AKM BioVel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/akm/biovel.svg?style=flat-square)](https://packagist.org/packages/akm/biovel)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/akm/biovel/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/akm/biovel/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/akm/biovel/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/akm/biovel/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/akm/biovel.svg?style=flat-square)](https://packagist.org/packages/akm/biovel)
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Laravel package untuk berkomunikasi dengan mesin fingerprint seperti Solution X105 (ZKTeco Protocol) melalui koneksi TCP/IP (LAN).
 
-## Support us
+## Fitur
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
+- Koneksi ke mesin fingerprint melalui TCP/IP
+- Pengambilan data absensi dari mesin
+- Command Artisan untuk sinkronisasi data
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+## Instalasi
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
-
-## Installation
-
-You can install the package via composer:
+Kamu bisa menginstall package melalui composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
+composer require akm/biovel
 ```
 
-You can publish and run the migrations with:
+Kemudian publish file konfigurasi dengan command:
 
 ```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
+php artisan vendor:publish --tag="biovel-config"
 ```
 
-You can publish the config file with:
+## Konfigurasi
 
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
+Setelah publikasi konfigurasi, kamu bisa mengatur koneksi ke mesin fingerprint di file `config/biovel.php`.
+
+Kamu juga bisa mengatur konfigurasi melalui environment variables di file `.env`:
+
+```dotenv
+FINGERPRINT_IP=192.168.1.201
+FINGERPRINT_PORT=4370
 ```
 
-This is the contents of the published config file:
+## Penggunaan
+
+### Basic Usage
 
 ```php
-return [
-];
+// Menggunakan Facade
+use AKM\Biovel\Facades\Biovel;
+
+// Koneksi ke mesin fingerprint
+Biovel::connect();
+
+// Mengambil data absensi
+$attendanceData = Biovel::getAttendance();
+
+// Menutup koneksi
+Biovel::disconnect();
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
-```
-
-## Usage
+### Contoh Dalam Controller
 
 ```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+<?php
+
+namespace App\Http\Controllers;
+
+use AKM\Biovel\Facades\Biovel;
+use Illuminate\Http\JsonResponse;
+
+class AttendanceController extends Controller
+{
+    public function sync(): JsonResponse
+    {
+        try {
+            // Koneksi ke mesin fingerprint
+            Biovel::connect();
+            
+            // Ambil data absensi
+            $attendanceData = Biovel::getAttendance();
+            
+            // Proses data (simpan ke database, dll)
+            // ...
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disinkronkan',
+                'data' => $attendanceData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal sinkronisasi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}
+```
+
+### Command Artisan
+
+Paket ini menyediakan command Artisan untuk melakukan sinkronisasi data:
+
+```bash
+php artisan biovel:sync
 ```
 
 ## Testing
@@ -75,17 +113,9 @@ composer test
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [SirajunNasihin](https://github.com/sirajunnasihin)
 - [All Contributors](../../contributors)
 
 ## License
