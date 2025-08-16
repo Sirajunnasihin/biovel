@@ -1,7 +1,7 @@
 # AKM BioVel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/akm/biovel.svg?style=flat-square)](https://packagist.org/packages/akm/biovel)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/akm/biovel/phpstan.yml?branch=main&label=tests&style=flat-square)](https://github.com/akm/biovel/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/akm/biovel/phpstan.yml?branch=main&label=tests&style=flat-square)](https://github.com/akm/biovel/actions?query=workflow%3APHPStan+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/akm/biovel/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/akm/biovel/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/akm/biovel.svg?style=flat-square)](https://packagist.org/packages/akm/biovel)
 
